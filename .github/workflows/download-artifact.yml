@@ -1,9 +1,10 @@
-name: Download Artifacts
-run-name: ${{ github.actor }} is downloading artifacts
+name: Download Artifact
+run-name: ${{ github.actor }} is downloading artifact
 on:
   workflow_run:
     workflows: ["Upload Artifact"]
     types: [completed]
+    branches: [main, actions/demo]
 
 jobs:
   download_and_print:
@@ -16,7 +17,7 @@ jobs:
       - name: Download all artifacts from workflow run
         uses: actions/download-artifact@v4
         with:
-          workflow: upload-artifact.yml
+          workflow: "Upload Artifact"
           run-id: ${{ github.event.workflow_run.id }}
           path: downloaded-artifacts
 
@@ -36,3 +37,15 @@ jobs:
             fi
             echo ""
           done
+
+      - name: Create summary report
+        run: |
+          echo "=== ARTIFACT DOWNLOAD SUMMARY ==="
+          echo "Workflow Run ID: ${{ github.event.workflow_run.id }}"
+          echo "Triggered by: ${{ github.event.workflow_run.actor.login }}"
+          echo "Commit: ${{ github.event.workflow_run.head_sha }}"
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}"
+          echo "Status: ${{ github.event.workflow_run.conclusion }}"
+          echo ""
+          echo "Artifacts downloaded successfully!"
+          echo "Check the logs above for detailed coverage analysis."
