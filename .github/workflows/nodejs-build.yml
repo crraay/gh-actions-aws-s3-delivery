@@ -1,5 +1,5 @@
-name: Node.js Build Demo
-run-name: ${{ github.actor }} is testing out Node.js build 🚀
+name: Node.js Build
+run-name: ${{ github.actor }} is testing out Node.js build
 on: [push, workflow_dispatch]
 jobs:
   build:
