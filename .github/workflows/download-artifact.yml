@@ -1,0 +1,38 @@
+name: Download Artifacts
+run-name: ${{ github.actor }} is downloading artifacts
+on:
+  workflow_run:
+    workflows: ["Upload Artifact"]
+    types: [completed]
+
+jobs:
+  download_and_print:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts from workflow run
+        uses: actions/download-artifact@v4
+        with:
+          workflow: upload-artifact.yml
+          run-id: ${{ github.event.workflow_run.id }}
+          path: downloaded-artifacts
+
+      - name: List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -la downloaded-artifacts/
+          echo ""
+          echo "Contents of each artifact:"
+          for artifact in downloaded-artifacts/*; do
+            echo "=== $(basename $artifact) ==="
+            if [ -d "$artifact" ]; then
+              find "$artifact" -type f | head -20
+              echo "..."
+            else
+              echo "Not a directory"
+            fi
+            echo ""
+          done
